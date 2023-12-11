@@ -4,6 +4,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = 600;
 canvas.height = 400;
 
+const paddleSpeed = 5;
+
 const drawRect = (x, y, w, h, color = "#000") => {
 
     ctx.fillStyle = color;
@@ -79,7 +81,6 @@ class Ball {
 
     collideWithPaddle() {
 
-        
 
     }
 
@@ -92,11 +93,59 @@ class Ball {
 
 }
 
+
+class Paddle {
+
+    constructor(x,color){
+        
+        this.w = 10;
+        this.h = 80;
+        this.x = x;
+        this.y = canvas.height/2 - this.h / 2;
+        this.v = 0;
+        this.color = color;
+    
+    }
+
+    update(){
+
+        this.collideWithBorder();
+        this.y += this.v;
+
+    }
+
+    collideWithBorder(){
+
+        if( this.y <= 0 ) {
+            this.y = 0;
+            return;
+        }
+        if( this.y + this.h >= canvas.height ) {
+            this.y = canvas.height - this.h; 
+            return;
+        }
+
+    }
+
+    draw(){
+
+        drawRect( this.x, this.y, this.w, this.h, this.color);
+
+    }
+
+}
+
+
 const ball = new Ball;
+const playerOne = new Paddle(10, "#ffffff");
+const playerTwo = new Paddle( canvas.width - 20, "#ffffff");
+
 
 function update () {
 
     ball.update();
+    playerOne.update();
+    playerTwo.update();
 
 }
 
@@ -112,6 +161,8 @@ function draw () {
     
     //draw entities;
     ball.draw();
+    playerOne.draw();
+    playerTwo.draw();
 
 }
 
@@ -122,5 +173,19 @@ function loop () {
     draw();
 
 }
+
+document.addEventListener( 'keydown', (event) => {
+
+    switch (event.keyCode) {
+
+        case 32:
+            playerOne.v *= -1;
+            break;
+        case 76:
+            playerTwo.v *= -1;
+            break;
+    }
+
+} )
 
 requestAnimationFrame(loop);
